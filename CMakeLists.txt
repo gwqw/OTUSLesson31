@@ -15,8 +15,11 @@ if (USE_TEST)
 endif()
 
 # source
-set(SOURCE )
-set(EXE_SOURCE1 rclst_main.cpp ${SOURCE})
+set(SOURCE
+    input_parser.cpp input_parser.h
+    realty_types.h
+)
+set(EXE_SOURCE1 rclst_main.cpp trainer.cpp trainer.h ${SOURCE})
 set(EXE_SOURCE2 rclss_main.cpp ${SOURCE})
 if (USE_TEST)
     set(TEST_SOURCE  ${SOURCE})
@@ -65,6 +68,12 @@ if (USE_TEST)
 endif()
 
 # target linking
+target_link_libraries(${EXE_NAME1}
+        dlib openblas
+)
+target_link_libraries(${EXE_NAME2}
+        dlib openblas
+)
 if (USE_TEST)
     target_link_libraries(${TEST_NAME}
         ${Boost_LIBRARIES}
@@ -72,7 +81,7 @@ if (USE_TEST)
 endif()
 
 # installation
-install(TARGETS realty RUNTIME DESTINATION bin)
+install(TARGETS ${EXE_NAME1} ${EXE_NAME2} RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 
