@@ -18,9 +18,10 @@ endif()
 set(SOURCE
     input_parser.cpp input_parser.h
     realty_types.h
+    str_utils.cpp str_utils.h
 )
 set(EXE_SOURCE1 rclst_main.cpp trainer.cpp trainer.h ${SOURCE})
-set(EXE_SOURCE2 rclss_main.cpp ${SOURCE})
+set(EXE_SOURCE2 rclss_main.cpp predictor.cpp predictor.h ${SOURCE})
 if (USE_TEST)
     set(TEST_SOURCE  ${SOURCE})
 endif()
@@ -41,7 +42,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMP_OPTIONS "-Wall;-Wextra;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Wcast-align;-Wunused;-Woverloaded-virtual;-Wconversion;-Wsign-conversion;-Wduplicated-cond")
   if(CMAKE_BUILD_TYPE MATCHES Debug)
-      set(CMP_OPTIONS ${CMP_OPTIONS}";-D_GLIBCXX_DEBUG;-D_GLIBCXX_DEBUG_PEDANTIC")
+      #set(CMP_OPTIONS ${CMP_OPTIONS}";-D_GLIBCXX_DEBUG;-D_GLIBCXX_DEBUG_PEDANTIC")
+      set(CMP_OPTIONS ${CMP_OPTIONS}";-fsanitize=address;")
       message("debug")
   endif()
 else()
@@ -50,7 +52,7 @@ endif()
 
 # target properties
 set_target_properties(${EXE_NAME1} ${EXE_NAME2} ${TEST_NAME} PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS ${CMP_OPTIONS}
 )
