@@ -101,5 +101,8 @@ def print_points(points):
         print(x, y, rooms, price, area, kitchen, floor, floor_num, sep=';')
 
 if __name__ == "__main__":
-    points = generate_data(1000, 200, 10)
+    cities = 10
+    if len(sys.argv) > 1:
+        cities = int(sys.argv[1])
+    points = generate_data(1000, 200, cities)
     print_points(points)

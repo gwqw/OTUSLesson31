@@ -34,4 +34,11 @@ BOOST_AUTO_TEST_SUITE(input_parser_test_suite)
         BOOST_CHECK(res_samples == expected);
     }
 
+    BOOST_AUTO_TEST_CASE(test_serialize_sample) {
+        sample_type sample{86.116781, 55.335492, 2, 4326901.00, 54.00, 7.00, 1};
+        string expected = "86.1168;55.3355;2;4.3269e+06;54;7;1";
+        auto res_sample_line = serializeSample(sample);
+        BOOST_CHECK(res_sample_line == expected);
+    }
+
 BOOST_AUTO_TEST_SUITE_END()

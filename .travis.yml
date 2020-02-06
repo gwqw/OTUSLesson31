@@ -18,6 +18,7 @@ matrix:
             - g++-8
             - libopenblas-dev
             - libdlib-dev
+            - libboost-test-dev 
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 before_install:
@@ -28,6 +29,7 @@ before_install:
 script:
 - cmake .
 - cmake --build .
+- cmake --build . --target test
 - cmake --build . --target package
 
 deploy:
