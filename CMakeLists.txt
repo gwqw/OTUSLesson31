@@ -111,5 +111,5 @@ include(CPack)
 # tests
 if (USE_TEST)
     enable_testing()
-    add_test(${TEST_NAME} ${TEST_NAME})
+    add_test(${TEST_NAME} bin/${TEST_NAME})
 endif()
