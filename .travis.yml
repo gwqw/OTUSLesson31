@@ -1,5 +1,7 @@
 dist: xenial
-language: cpp
+#language: cpp
+language: python
+python: "3.7"
 compiler: clang
 # safelist
 branches:
@@ -17,16 +19,30 @@ matrix:
           packages:
             - g++-8
             - libopenblas-dev
-            - libdlib-dev
+            #- libdlib-dev
             - libboost-test-dev 
+          update: true
       env:
          - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
 before_install:
     - eval "${MATRIX_EVAL}"
     - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 60
 
+# Install conan
+install:
+  - pip3 install conan
+  # Automatic detection of your arch, compiler, etc.
+  - conan user
+
 # run
 script:
+- conan remote add omaralvarez https://api.bintray.com/conan/omaralvarez/public-conan
+- conan install . -s build_type=Release --build=missing
+# mf costyl': need to update conan profile and install again
+- sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 60
+- conan profile update settings.compiler.libcxx=libstdc++11 default
+- conan profile update settings.compiler.version=8 default 
+- conan install . -s build_type=Release --build=missing
 - cmake .
 - cmake --build .
 - cmake --build . --target test

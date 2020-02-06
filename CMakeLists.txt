@@ -14,6 +14,10 @@ if (USE_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 endif()
 
+# conan dependencies
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # source
 set(SOURCE
     input_parser.cpp input_parser.h
@@ -57,7 +61,14 @@ set_target_properties(${EXE_NAME1} ${EXE_NAME2} ${TEST_NAME} PROPERTIES
     COMPILE_OPTIONS ${CMP_OPTIONS}
 )
 
-# add boost headers for test
+# add headers
+target_include_directories(${EXE_NAME1}
+        PRIVATE ${CMAKE_MODULE_PATH}/include
+)
+target_include_directories(${EXE_NAME2}
+        PRIVATE ${CMAKE_MODULE_PATH}/include
+)
+
 if (USE_TEST)
     if(UNIX)
         set_target_properties(${TEST_NAME} PROPERTIES
@@ -65,20 +76,20 @@ if (USE_TEST)
         )
     endif()
     target_include_directories(${TEST_NAME}
-            PRIVATE ${Boost_INCLUDE_DIR}
+            PRIVATE ${Boost_INCLUDE_DIR} ${CMAKE_MODULE_PATH}/include
     )
 endif()
 
 # target linking
 target_link_libraries(${EXE_NAME1}
-        dlib openblas
+        ${CONAN_LIBS} openblas
 )
 target_link_libraries(${EXE_NAME2}
-        dlib openblas
+        ${CONAN_LIBS} openblas
 )
 if (USE_TEST)
     target_link_libraries(${TEST_NAME}
-            dlib openblas ${Boost_LIBRARIES}
+            ${CONAN_LIBS} openblas ${Boost_LIBRARIES}
     )
 endif()
 
