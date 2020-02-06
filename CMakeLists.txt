@@ -7,7 +7,7 @@ else()
     project(realty VERSION 0.0.1)
 endif()
 
-set(USE_TEST OFF)
+set(USE_TEST ON)
 
 # boost dependensies
 if (USE_TEST)
@@ -23,7 +23,7 @@ set(SOURCE
 set(EXE_SOURCE1 rclst_main.cpp trainer.cpp trainer.h ${SOURCE})
 set(EXE_SOURCE2 rclss_main.cpp predictor.cpp predictor.h ${SOURCE})
 if (USE_TEST)
-    set(TEST_SOURCE  ${SOURCE})
+    set(TEST_SOURCE test_realty.cpp ${SOURCE})
 endif()
 
 # targets and libraries
@@ -78,7 +78,7 @@ target_link_libraries(${EXE_NAME2}
 )
 if (USE_TEST)
     target_link_libraries(${TEST_NAME}
-        ${Boost_LIBRARIES}
+            dlib openblas ${Boost_LIBRARIES}
     )
 endif()
 

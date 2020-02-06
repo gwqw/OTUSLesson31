@@ -22,7 +22,7 @@ if __name__ == "__main__":
     for line in reader:
         x_arr.append(float(line[xn]))
         y_arr.append(float(line[yn]))
-        class_arr.append(int(line[cn]))
+        class_arr.append(int(float(line[cn])))
 
     fig = plt.figure()
     plt.scatter(x_arr, y_arr, c=class_arr)

@@ -8,9 +8,12 @@
 using namespace std;
 using namespace dlib;
 
-std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &samples, size_t cluster_num) {
-    dlib::kcentroid<kernel_type> kc{kernel_type{}};
-    dlib::kkmeans<kernel_type> test{kc};
+std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &samples,
+        size_t cluster_num)
+{
+    using kernel = poly_kernel;
+    dlib::kcentroid<kernel> kc{kernel{gamma, coeff, degree}};
+    dlib::kkmeans<kernel> test{kc};
 
     test.set_number_of_centers(cluster_num);
     std::vector<sample_type> initial_centers;
@@ -21,19 +24,21 @@ std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &sampl
     res.reserve(samples.size());
     for (const auto& sample : samples) {
         res.push_back(test(sample));
+//        cout << test(sample) << '\n';
     }
     return res;
 }
 
 void RealtyTrainer::train(const std::vector<sample_type>& samples, const std::vector<double> &labels,
-        const std::string& filename) {
+        const std::string& filename)
+{
     //make the one_vs_one_trainer.
     ovo_trainer trainer;
     // make the binary trainers and set some parameters
-    krr_trainer<rbf_kernel> rbf_trainer;
+    krr_trainer<poly_kernel> rbf_trainer;
     svm_nu_trainer<poly_kernel> poly_trainer;
+    rbf_trainer.set_kernel(poly_kernel(gamma, coeff, degree));
     poly_trainer.set_kernel(poly_kernel(0.1, 1, 2));
-    rbf_trainer.set_kernel(rbf_kernel(0.1));
     // Now tell the one_vs_one_trainer that, by default, it should use the rbf_trainer
     // to solve the individual binary classification subproblems.
     trainer.set_trainer(rbf_trainer);
@@ -49,10 +54,25 @@ void RealtyTrainer::train(const std::vector<sample_type>& samples, const std::ve
     one_vs_one_decision_function<ovo_trainer,
             decision_function<poly_kernel>,  // This is the output of the poly_trainer
             decision_function<rbf_kernel>    // This is the output of the rbf_trainer
-    > df2;
+        > df2;
 
     // Put df into df2 and then save df2 to disk.  Note that we could have also said
     // df2 = trainer.train(samples, labels);  But doing it this way avoids retraining.
     df2 = df;
     serialize(filename) << df2;
+
+    // Now let's do 5-fold cross-validation using the one_vs_one_trainer we just setup.
+    // As an aside, always shuffle the order of the samples before doing cross validation.
+    // For a discussion of why this is a good idea see the svm_ex.cpp example.
+    auto samples_copy = samples;
+    auto labels_copy = labels;
+    randomize_samples(samples_copy, labels_copy);
+    try {
+        cout << "cross validation: \n"
+             << cross_validate_multiclass_trainer(trainer, samples_copy, labels_copy, 5)
+             << endl;
+    } catch (const exception& e) {
+        cerr << "cross validation fails, results can be invalid" << endl;
+        cerr << e.what() << endl;
+    }
 }
