@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <utility>
 
 #include "input_parser.h"
 #include "predictor.h"
@@ -23,7 +22,6 @@ int main(int argc, char* argv[]) {
         for (string line; getline(cin, line); ) {
             auto sample = deserializeSample(line);
             auto pred_cluster = pred.getPrediction(sample);
-//            cout << "group: " << pred_cluster << endl;
             auto pred_res = getResForCluster(sample, pred_cluster, sample_db);
             for (const auto& r : pred_res) {
                 cout << r << '\n';
@@ -31,6 +29,7 @@ int main(int argc, char* argv[]) {
         }
 
         return 0;
+
     } catch (const exception& e) {
         cout << e.what() << endl;
         return 1;

@@ -15,8 +15,10 @@ if (USE_TEST)
 endif()
 
 # conan dependencies
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup()
+endif()
 
 # source
 set(SOURCE
@@ -81,16 +83,32 @@ if (USE_TEST)
 endif()
 
 # target linking
-target_link_libraries(${EXE_NAME1}
+if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
+    target_link_libraries(${EXE_NAME1}
         ${CONAN_LIBS} openblas
-)
-target_link_libraries(${EXE_NAME2}
-        ${CONAN_LIBS} openblas
-)
-if (USE_TEST)
-    target_link_libraries(${TEST_NAME}
-            ${CONAN_LIBS} openblas ${Boost_LIBRARIES}
     )
+    target_link_libraries(${EXE_NAME2}
+        ${CONAN_LIBS} openblas
+    )
+else()
+    target_link_libraries(${EXE_NAME1}
+        dlib openblas
+    )
+    target_link_libraries(${EXE_NAME2}
+        dlib openblas
+    )
+endif()
+
+if (USE_TEST)
+    if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
+        target_link_libraries(${TEST_NAME}
+            ${CONAN_LIBS} openblas ${Boost_LIBRARIES}
+        )
+    else()
+        target_link_libraries(${TEST_NAME}
+            dlib openblas ${Boost_LIBRARIES}
+        )
+    endif()
 endif()
 
 # installation

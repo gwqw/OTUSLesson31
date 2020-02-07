@@ -17,22 +17,9 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     try {
-        auto cluster_num = stol(argv[1]);
-        string prefix_filename{argv[2]};
+        auto [cluster_num, prefix_filename, gamma, coeff, degree] = parseCommandLine(argc, argv);
         string train_filename = prefix_filename + ".trn";
         string samples_filename = prefix_filename + ".smp";
-        double gamma = 0.1;
-        double coeff = 1;
-        double degree = 2;
-        if (argc > 3) {
-            gamma = stod(argv[3]);
-            if (argc > 4) {
-                coeff = stod(argv[4]);
-                if (argc > 5) {
-                    degree = stod(argv[5]);
-                }
-            }
-        }
 
         auto samples = parseFromStreamForTrain();
         RealtyTrainer trainer(gamma, coeff, degree);

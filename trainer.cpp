@@ -5,11 +5,13 @@
 #include <dlib/clustering.h>
 #include <dlib/svm_threaded.h>
 
+//#define CROSS_VALIDATION
+
 using namespace std;
 using namespace dlib;
 
 std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &samples,
-        size_t cluster_num)
+                                           std::size_t cluster_num)
 {
     using kernel = poly_kernel;
     dlib::kcentroid<kernel> kc{kernel{gamma, coeff, degree}};
@@ -24,7 +26,6 @@ std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &sampl
     res.reserve(samples.size());
     for (const auto& sample : samples) {
         res.push_back(test(sample));
-//        cout << test(sample) << '\n';
     }
     return res;
 }
@@ -35,9 +36,9 @@ void RealtyTrainer::train(const std::vector<sample_type>& samples, const std::ve
     //make the one_vs_one_trainer.
     ovo_trainer trainer;
     // make the binary trainers and set some parameters
-    krr_trainer<poly_kernel> rbf_trainer;
+    krr_trainer<rbf_kernel> rbf_trainer;
     svm_nu_trainer<poly_kernel> poly_trainer;
-    rbf_trainer.set_kernel(poly_kernel(gamma, coeff, degree));
+    rbf_trainer.set_kernel(rbf_kernel(gamma));
     poly_trainer.set_kernel(poly_kernel(0.1, 1, 2));
     // Now tell the one_vs_one_trainer that, by default, it should use the rbf_trainer
     // to solve the individual binary classification subproblems.
@@ -61,6 +62,7 @@ void RealtyTrainer::train(const std::vector<sample_type>& samples, const std::ve
     df2 = df;
     serialize(filename) << df2;
 
+#ifdef CROSS_VALIDATION
     // Now let's do 5-fold cross-validation using the one_vs_one_trainer we just setup.
     // As an aside, always shuffle the order of the samples before doing cross validation.
     // For a discussion of why this is a good idea see the svm_ex.cpp example.
@@ -75,4 +77,5 @@ void RealtyTrainer::train(const std::vector<sample_type>& samples, const std::ve
         cerr << "cross validation fails, results can be invalid" << endl;
         cerr << e.what() << endl;
     }
+#endif
 }

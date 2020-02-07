@@ -21,6 +21,20 @@ BOOST_AUTO_TEST_SUITE(input_parser_test_suite)
         BOOST_CHECK(res_sample == expected);
     }
 
+    BOOST_AUTO_TEST_CASE(test_parse_sample) {
+        {
+            string sample_line = "84.991647;54.011268;3;4123226.00;70.00;16.00;10;10";
+            auto res_sample = parseLine(sample_line);
+            sample_type expected{84.991647, 54.011268, 3, 4123226.00, 70.00, 16.00, 0};
+            BOOST_CHECK(*res_sample == expected);
+        }
+        {
+            string sample_line = "83.488883;54.586206;1;1643644.00;26.00;;14;17";
+            auto res_sample = parseLine(sample_line);
+            BOOST_CHECK(res_sample == nullopt);
+        }
+    }
+
     BOOST_AUTO_TEST_CASE(test_parseFromStream) {
         stringstream ss;
         ss << "86.116781;55.335492;2;4326901.00;54.00;7.00;5;5\n"

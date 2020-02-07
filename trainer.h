@@ -11,7 +11,7 @@ public:
         : gamma(gamma), coeff(coeff), degree(degree)
     {}
 
-    std::vector<double> cluster(const std::vector<sample_type>& samples, size_t cluster_num);
+    std::vector<double> cluster(const std::vector<sample_type>& samples, std::size_t cluster_num);
     void train(const std::vector<sample_type>& samples, const std::vector<double>& labels,
             const std::string& filename);
 private:
