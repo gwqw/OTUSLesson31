@@ -9,6 +9,8 @@ class Predictor {
 public:
     explicit Predictor(const std::string& filename);
     int getPrediction(const sample_type& sample);
+    dlib::matrix<double> calcConfusionMatrix(const std::vector<sample_type>& samples,
+            const std::vector<double>& labels);
 private:
     dlib::one_vs_one_decision_function<
         ovo_trainer,

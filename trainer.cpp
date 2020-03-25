@@ -13,8 +13,8 @@ using namespace dlib;
 std::vector<double> RealtyTrainer::cluster(const std::vector<sample_type> &samples,
                                            std::size_t cluster_num)
 {
-    using kernel = poly_kernel;
-    dlib::kcentroid<kernel> kc{kernel{gamma, coeff, degree}};
+    using kernel = rbf_kernel;
+    dlib::kcentroid<kernel> kc{kernel{gamma}};
     dlib::kkmeans<kernel> test{kc};
 
     test.set_number_of_centers(cluster_num);

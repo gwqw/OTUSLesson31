@@ -18,6 +18,11 @@ int Predictor::getPrediction(const sample_type& sample) {
     return static_cast<int>(df3(sample));
 }
 
+dlib::matrix<double> Predictor::calcConfusionMatrix(const std::vector<sample_type>& samples,
+                                                    const std::vector<double>& labels) {
+    return test_multiclass_decision_function(df3, samples, labels);
+}
+
 std::vector<std::string> getResForCluster(const sample_type& sample, int pred_cluster,
                                           const SampleDataBase& sample_db)
 {

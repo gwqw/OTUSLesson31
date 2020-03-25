@@ -28,6 +28,7 @@ set(SOURCE
 )
 set(EXE_SOURCE1 rclst_main.cpp trainer.cpp trainer.h ${SOURCE})
 set(EXE_SOURCE2 rclss_main.cpp predictor.cpp predictor.h ${SOURCE})
+set(EXE_SOURCE3 rcl_test_main.cpp predictor.cpp predictor.h ${SOURCE})
 if (USE_TEST)
     set(TEST_SOURCE test_realty.cpp ${SOURCE})
 endif()
@@ -35,11 +36,13 @@ endif()
 # targets and libraries
 set(EXE_NAME1 rclst)
 set(EXE_NAME2 rclss)
+set(EXE_NAME3 rcl_test)
 if (USE_TEST)
     set(TEST_NAME test_realty)
 endif()
 add_executable(${EXE_NAME1} ${EXE_SOURCE1})
 add_executable(${EXE_NAME2} ${EXE_SOURCE2})
+add_executable(${EXE_NAME3} ${EXE_SOURCE3})
 if (USE_TEST)
     add_executable(${TEST_NAME} ${TEST_SOURCE})
 endif()
@@ -57,7 +60,7 @@ else()
 endif()
 
 # target properties
-set_target_properties(${EXE_NAME1} ${EXE_NAME2} ${TEST_NAME} PROPERTIES
+set_target_properties(${EXE_NAME1} ${EXE_NAME2} ${EXE_NAME3} ${TEST_NAME} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS ${CMP_OPTIONS}
@@ -68,6 +71,9 @@ target_include_directories(${EXE_NAME1}
         PRIVATE ${CMAKE_MODULE_PATH}/include
 )
 target_include_directories(${EXE_NAME2}
+        PRIVATE ${CMAKE_MODULE_PATH}/include
+)
+target_include_directories(${EXE_NAME3}
         PRIVATE ${CMAKE_MODULE_PATH}/include
 )
 
@@ -90,11 +96,17 @@ if(DEFINED ENV{TRAVIS_BUILD_NUMBER})
     target_link_libraries(${EXE_NAME2}
         ${CONAN_LIBS} openblas
     )
+    target_link_libraries(${EXE_NAME3}
+        ${CONAN_LIBS} openblas
+    )
 else()
     target_link_libraries(${EXE_NAME1}
         dlib openblas
     )
     target_link_libraries(${EXE_NAME2}
+        dlib openblas
+    )
+    target_link_libraries(${EXE_NAME3}
         dlib openblas
     )
 endif()

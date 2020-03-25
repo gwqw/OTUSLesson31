@@ -22,19 +22,16 @@ std::optional<sample_type> parseLine(std::string_view line) {
     int floor = 0;
     while (!line.empty()) {
         auto word = read_token(line, ";");
-        if (!word.empty()) {
-            if (i < FLOOR) {
-                res(i) = stod(string(word));
-            } else if (i == FLOOR) {
-                floor = convertToInt(word);
-            } else if (i == FLOOR_NUM) {
-                int floor_num = convertToInt(word);
-                res(FLOOR) = floor == 0 || floor == floor_num ? 0.0 : 1.0;
-            } else {
-                break;
-            }
+        if (i < FLOOR) {
+            res(i) = !word.empty() ? stod(string(word)) : 0;
+        } else if (i == FLOOR) {
+            floor = convertToIntDef(word, 0);
+        } else if (i == FLOOR_NUM) {
+            int floor_num = convertToIntDef(word, 0);;
+            res(FLOOR) = floor == 0 || floor == floor_num ? 0.0 : 1.0;
         } else {
-            return nullopt;
+            cerr << "Too long line" << endl;
+            break;
         }
         i++;
     }
@@ -112,16 +109,16 @@ void samplesSerialize(const std::vector<sample_type>& samples,
     }
 }
 
-SampleDataBase samplesDeserialize(const std::string& filename)
+SampleDataBase samplesDeserializeToDb(const std::string& filename)
 {
     ifstream f(filename);
     if (!f) {
         throw invalid_argument("Can't find file " + filename);
     }
-    return samplesDeserialize(f);
+    return samplesDeserializeToDb(f);
 }
 
-SampleDataBase samplesDeserialize(std::istream& in)
+SampleDataBase samplesDeserializeToDb(std::istream& in)
 {
     SampleDataBase res;
     for (string line; getline(in, line); ) {
@@ -131,6 +128,30 @@ SampleDataBase samplesDeserialize(std::istream& in)
         res[i].push_back(deserializeSample(data));
     }
     return res;
+}
+
+std::pair<std::vector<sample_type>, std::vector<double>>
+    samplesDeserializeToVector(const std::string& filename)
+{
+    ifstream f(filename);
+    if (!f) {
+        throw invalid_argument("Can't find file " + filename);
+    }
+    return samplesDeserializeToVector(f);
+}
+
+std::pair<std::vector<sample_type>, std::vector<double>>
+    samplesDeserializeToVector(std::istream& in)
+{
+    std::vector<sample_type> samples;
+    std::vector<double> labels;
+    for (string line; getline(in, line); ) {
+        string_view data{line};
+        auto word = read_token(data, ";");
+        labels.push_back(convertToInt(word));
+        samples.push_back(deserializeSample(data));
+    }
+    return {move(samples), move(labels)};
 }
 
 std::tuple<int, std::string, double, double, double>

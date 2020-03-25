@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
         string samples_filename = prefix_filename + ".smp";
 
         Predictor pred(train_filename);
-        auto sample_db = samplesDeserialize(samples_filename);
+        auto sample_db = samplesDeserializeToDb(samples_filename);
         for (string line; getline(cin, line); ) {
             auto sample = deserializeSample(line);
             auto pred_cluster = pred.getPrediction(sample);

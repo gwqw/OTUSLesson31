@@ -6,6 +6,7 @@
 #include <iostream>
 #include <tuple>
 #include <optional>
+#include <utility>
 
 #include "realty_types.h"
 
@@ -20,8 +21,14 @@ void samplesSerialize(const std::vector<sample_type>& samples,
                       const std::vector<double>& labels, const std::string& filename);
 void samplesSerialize(const std::vector<sample_type>& samples,
                       const std::vector<double>& labels, std::ostream& out);
-SampleDataBase samplesDeserialize(const std::string& filename);
-SampleDataBase samplesDeserialize(std::istream& in);
+SampleDataBase samplesDeserializeToDb(const std::string& filename);
+SampleDataBase samplesDeserializeToDb(std::istream& in);
+std::pair<std::vector<sample_type>, std::vector<double>>
+    samplesDeserializeToVector(const std::string& filename);
+std::pair<std::vector<sample_type>, std::vector<double>>
+    samplesDeserializeToVector(std::istream& in);
+
+
 
 std::tuple<int, std::string, double, double, double>
         parseCommandLine(int argc, char** argv);

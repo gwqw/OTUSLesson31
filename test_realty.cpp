@@ -31,7 +31,8 @@ BOOST_AUTO_TEST_SUITE(input_parser_test_suite)
         {
             string sample_line = "83.488883;54.586206;1;1643644.00;26.00;;14;17";
             auto res_sample = parseLine(sample_line);
-            BOOST_CHECK(res_sample == nullopt);
+            sample_type expected{83.488883, 54.586206, 1, 1643644.00, 26.00, 0, 1};
+            BOOST_CHECK(res_sample == expected);
         }
     }
 
